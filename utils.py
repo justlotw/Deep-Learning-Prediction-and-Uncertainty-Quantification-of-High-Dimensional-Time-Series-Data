@@ -166,32 +166,40 @@ class WarmupLearning(LearningRateScheduler):
             self.learning_rate_schedule[i] = self.base_lr * self.factor**cycle
         return self.learning_rate_schedule
         
-def plot_predictions(mean_pred, y_test, max_lt, idx = 0, save_name = False):
-    fig, ax = plt.subplots(3, 1, figsize = (20, 9))
+def plot_predictions(mean_pred, y_test, max_lt, idx = 0, save_name = False, pred_only = False):
+    if pred_only:
+        fig, ax = plt.subplots(2, 1, figsize = (20, 5))
+    else:
+        fig, ax = plt.subplots(3, 1, figsize = (20, 7.5))
     
-    cbar_range = max(np.max(mean_pred[idx]), np.abs(np.min(mean_pred[idx])))
-
+    cbar_range = max(np.max(y_test[idx]), np.abs(np.min(y_test[idx])))
+    
     ax[0].imshow(mean_pred[idx].T, cmap = "RdYlBu", aspect = "auto")
     ax[0].tick_params(axis='both', which='both', left = False, bottom=False, labelleft = False, labelbottom=False) 
-    ax[0].set_title("Predicted")
+    # ax[0].set_title("Predicted")
 
-    ax[1].imshow(y_test[idx].T, cmap = "RdYlBu", aspect = "auto")
-    ax[1].tick_params(axis='both', which='both', left = False, bottom=False, labelleft = False, labelbottom=False) 
-    ax[1].set_title("Actual")
-
-    im = ax[2].imshow(y_test[idx].T - mean_pred[idx].T, cmap = "RdYlBu", aspect = "auto", extent = [0, max_lt, 0, 40],
+    if not pred_only:
+        ax[1].imshow(y_test[idx].T, cmap = "RdYlBu", aspect = "auto")
+        ax[1].tick_params(axis='both', which='both', left = False, bottom=False, labelleft = False, labelbottom=False) 
+        # ax[1].set_title("Actual")
+    
+    if pred_only:
+        er_idx = 1
+    else:
+        er_idx = 2
+        
+    im = ax[er_idx].imshow(y_test[idx].T - mean_pred[idx].T, cmap = "RdYlBu", aspect = "auto", extent = [0, max_lt, 0, 40],
                      vmin = -cbar_range, vmax = cbar_range)
-    ax[2].tick_params(axis='both', which='both', left = False, labelleft = False) 
-    ax[2].set_title("Error")
-    ax[2].set_xlabel("Lyapunov Time")
+    ax[er_idx].tick_params(axis='both', which='both', left = False, labelleft = False) 
+    # ax[er_idx].set_title("Error")
+    # ax[er_idx].set_xlabel("Lyapunov Time")
 
-    fig.colorbar(im, ax = ax.ravel().tolist())
+    fig.colorbar(im, ax = ax.ravel().tolist(), pad = 0.02)
     if save_name:
         plt.savefig(save_name + ".png", facecolor = "white", bbox_inches = "tight")
     plt.show()
 
-
-
+    
 @jax.jit
 def sigmoid(x):
     return 1 / (1 + jnp.exp(-x))
