@@ -1,5 +1,7 @@
 # Deep Learning Prediction and Uncertainty Quantification of High Dimensional Time Series Data
 
+A summary of the thesis can be seen in [here](Presentation.pdf)
+
 ## Installation instructions
 If you wish to download the data and run the files, you must create a folder "data" in the root directory or change the target folder in create_data.py. The data can then be installed by running the file generate_data.ipnyb.
 
